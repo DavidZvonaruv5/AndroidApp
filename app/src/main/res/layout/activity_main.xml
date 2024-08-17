@@ -19,11 +19,44 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp"/>
 
+    <TextView
+        android:id="@+id/userListTextView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@id/loadUsersButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        app:layout_constraintVertical_bias="0.484" />
+
+    <Button
+        android:id="@+id/displayUsersButton"
+        android:layout_width="146dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="16dp"
+        android:textSize="13sp"
+        android:text="Display Users"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/addUserButton"
+        android:layout_width="146dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="16dp"
+        android:text="Add User"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/displayUsersButton" />
+
     <Button
         android:id="@+id/loadUsersButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sync Users"
+        android:text="Load Users"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_margin="16dp"/>
