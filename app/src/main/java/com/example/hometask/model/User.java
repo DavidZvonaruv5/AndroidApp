@@ -3,10 +3,17 @@ package com.example.hometask.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
+import androidx.room.TypeConverters;
+
 import com.google.gson.annotations.SerializedName;
+import java.util.Date;
+import com.example.hometask.database.Converters;
+import java.io.Serializable;
+import java.util.Objects;
+
 
 @Entity(tableName = "users")
-public class User {
+public class User implements Serializable {
     @PrimaryKey
     private int id;
 
@@ -22,6 +29,10 @@ public class User {
 
     private String avatar;
 
+    @ColumnInfo(name = "created_at")
+    @TypeConverters(Converters.class)
+    private Date createdAt;
+
     // Constructor
     public User(int id, String email, String firstName, String lastName, String avatar) {
         this.id = id;
@@ -29,6 +40,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.avatar = avatar;
+        this.createdAt = new Date(); // Set current date when user is created
     }
 
     // Getters and setters
@@ -46,4 +58,20 @@ public class User {
 
     public String getAvatar() { return avatar; }
     public void setAvatar(String avatar) { this.avatar = avatar; }
+
+    public Date getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

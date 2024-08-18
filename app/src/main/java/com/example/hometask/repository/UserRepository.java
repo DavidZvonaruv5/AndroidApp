@@ -2,6 +2,7 @@ package com.example.hometask.repository;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.hometask.api.ApiResponse;
 import com.example.hometask.api.ApiService;
@@ -10,6 +11,7 @@ import com.example.hometask.database.AppDatabase;
 import com.example.hometask.database.UserDao;
 import com.example.hometask.model.User;
 
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -20,6 +22,11 @@ import java.util.ArrayList;
 public class UserRepository {
     private ApiService apiService;
     private UserDao userDao;
+
+    public interface RepositoryCallback<T> {
+        void onSuccess(T result);
+        void onError(Exception e);
+    }
 
     public UserRepository(Context context) {
         apiService = RetrofitClient.getClient().create(ApiService.class);
@@ -95,8 +102,26 @@ public class UserRepository {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Date now = new Date();
+                for (User user : users) {
+                    user.setCreatedAt(now);
+                }
                 userDao.deleteAllUsers(); // Clear existing users
                 userDao.insertUsers(users);
+            }
+        }).start();
+    }
+
+    public void deleteUser(User user, RepositoryCallback<Void> callback) {
+        new Thread(() -> {
+            try {
+                Log.d("UserRepository", "Attempting to delete user with ID: " + user.getId());
+                userDao.deleteUser(user);
+                Log.d("UserRepository", "User deleted successfully from database");
+                callback.onSuccess(null);
+            } catch (Exception e) {
+                Log.e("UserRepository", "Error deleting user: " + e.getMessage());
+                callback.onError(e);
             }
         }).start();
     }

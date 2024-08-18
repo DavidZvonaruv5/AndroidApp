@@ -10,7 +10,6 @@ import android.widget.ProgressBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.example.hometask.model.User;
 import com.example.hometask.repository.UserRepository;
-import com.example.hometask.repository.RepositoryCallback;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void syncUsers() {
         showLoading();
-        userRepository.getAllUsers(new RepositoryCallback<List<User>>() {
+        userRepository.getAllUsers(new UserRepository.RepositoryCallback<List<User>>() {
             @Override
             public void onSuccess(List<User> result) {
                 runOnUiThread(() -> {
