@@ -20,6 +20,8 @@ import retrofit2.Response;
 import java.util.ArrayList;
 
 public class UserRepository {
+    private static final String TAG = "UserRepository";
+
     private ApiService apiService;
     private UserDao userDao;
 
@@ -65,19 +67,18 @@ public class UserRepository {
             }
         });
     }
-    public void getUsersFromDatabase(final RepositoryCallback<List<User>> callback) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    List<User> users = userDao.getAllUsers();
-                    callback.onSuccess(users);
-                } catch (Exception e) {
-                    callback.onError(e);
-                }
+
+    public void getUsersFromDatabase(RepositoryCallback<List<User>> callback) {
+        new Thread(() -> {
+            try {
+                List<User> users = userDao.getAllUsers();
+                callback.onSuccess(users);
+            } catch (Exception e) {
+                callback.onError(e);
             }
         }).start();
     }
+
 
     private void fetchUsersFromPage(int page, final RepositoryCallback<List<User>> callback) {
         apiService.getUsers(page).enqueue(new Callback<ApiResponse<List<User>>>() {
@@ -113,14 +114,37 @@ public class UserRepository {
     }
 
     public void deleteUser(User user, RepositoryCallback<Void> callback) {
+        Log.d(TAG, "Attempting to delete user with ID: " + user.getId());
         new Thread(() -> {
             try {
-                Log.d("UserRepository", "Attempting to delete user with ID: " + user.getId());
+                Log.d(TAG, "Deleting user from database...");
                 userDao.deleteUser(user);
-                Log.d("UserRepository", "User deleted successfully from database");
+                Log.d(TAG, "User deleted successfully from database");
                 callback.onSuccess(null);
             } catch (Exception e) {
-                Log.e("UserRepository", "Error deleting user: " + e.getMessage());
+                Log.e(TAG, "Error deleting user from database", e);
+                callback.onError(e);
+            }
+        }).start();
+    }
+
+    public void updateUser(User user, RepositoryCallback<Void> callback) {
+        new Thread(() -> {
+            try {
+                userDao.updateUser(user);
+                callback.onSuccess(null);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        }).start();
+    }
+
+    public void getUserById(int userId, RepositoryCallback<User> callback) {
+        new Thread(() -> {
+            try {
+                User user = userDao.getUserById(userId);
+                callback.onSuccess(user);
+            } catch (Exception e) {
                 callback.onError(e);
             }
         }).start();
