@@ -1,4 +1,4 @@
-package com.example.hometask;
+package com.example.hometask.ui;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.example.hometask.R;
 import com.example.hometask.model.User;
 import java.util.ArrayList;
 import java.util.List;

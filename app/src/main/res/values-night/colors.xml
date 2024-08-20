@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night mode color scheme -->
+    <color name="primary">#BB86FC</color>
+    <color name="primary_dark">#3700B3</color>
+    <color name="primary_light">#6200EA</color>
+    <color name="accent">#03DAC6</color>
+    <color name="primary_text">#FFFFFF</color>
+    <color name="secondary_text">#B3FFFFFF</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#1FFFFFFF</color>
+    <color name="background_cream">#121212</color>
+
+    <!-- Original colors for night mode -->
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+</resources>

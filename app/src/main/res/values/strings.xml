@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">HomeTask</string>
+    <string name="app_name">TaskFlow</string>
+    <string name="taskflow">TaskFlow</string>
+    <string name="user_list_title">User List</string>
+    <string name="back">Back</string>
+    <string name="here_is_the_avatar">Here is the avatar</string>
+    <string name="change_avatar">Change Avatar</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="delete_user">Delete User</string>
+    <string name="edit_user">Edit User</string>
+    <string name="image_of_user">Image of user</string>
 </resources>

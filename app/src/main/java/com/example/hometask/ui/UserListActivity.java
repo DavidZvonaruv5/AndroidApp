@@ -1,9 +1,9 @@
-package com.example.hometask;
+package com.example.hometask.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,16 +12,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-
+import com.example.hometask.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.example.hometask.model.User;
-import com.example.hometask.repository.UserRepository;
-
+import com.example.hometask.viewmodel.UserListViewModel;
+import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -32,25 +31,37 @@ public class UserListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private UserAdapter adapter;
     private ProgressBar loadingProgressBar;
-    private UserRepository userRepository;
     private Button prevButton, nextButton;
     private TextView pageInfoTextView;
     private ImageButton backButton;
-    private EditText searchEditText;
+    private TextInputEditText searchEditText;
     private Spinner sortSpinner;
 
+    private UserListViewModel viewModel;
     private List<User> allUsers = new ArrayList<>();
     private List<User> filteredUsers = new ArrayList<>();
     private int currentPage = 1;
     private static final int USERS_PER_PAGE = 5;
     private static final String[] SORT_OPTIONS = {"Name", "ID", "Date Added"};
     private static final int REQUEST_USER_DETAIL = 1;
+    private int currentSortOption = 1; // Default to ID sorting
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
 
+        viewModel = new ViewModelProvider(this).get(UserListViewModel.class);
+
+        initViews();
+        setupRecyclerView();
+        setupListeners();
+        observeViewModel();
+
+        viewModel.loadUsers();
+    }
+
+    private void initViews() {
         recyclerView = findViewById(R.id.recyclerView);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
         prevButton = findViewById(R.id.prevButton);
@@ -60,12 +71,19 @@ public class UserListActivity extends AppCompatActivity {
         searchEditText = findViewById(R.id.searchEditText);
         sortSpinner = findViewById(R.id.sortSpinner);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, SORT_OPTIONS);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortSpinner.setAdapter(spinnerAdapter);
+        sortSpinner.setSelection(currentSortOption); // Start sorting by ID
+    }
+
+    private void setupRecyclerView() {
         adapter = new UserAdapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+    }
 
-        userRepository = new UserRepository(this);
-
+    private void setupListeners() {
         backButton.setOnClickListener(v -> finish());
 
         prevButton.setOnClickListener(v -> {
@@ -82,10 +100,6 @@ public class UserListActivity extends AppCompatActivity {
             }
         });
 
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, SORT_OPTIONS);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sortSpinner.setAdapter(spinnerAdapter);
-        sortSpinner.setSelection(1); // Start sorting by ID
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -114,29 +128,23 @@ public class UserListActivity extends AppCompatActivity {
             intent.putExtra("USER", user);
             startActivityForResult(intent, REQUEST_USER_DETAIL);
         });
-
-        loadUsers(); // Load users when the activity is created
     }
 
-    private void loadUsers() {
-        showLoading();
-        userRepository.getUsersFromDatabase(new UserRepository.RepositoryCallback<List<User>>() {
-            @Override
-            public void onSuccess(List<User> result) {
-                runOnUiThread(() -> {
-                    hideLoading();
-                    allUsers = result;
-                    filteredUsers = new ArrayList<>(allUsers);
-                    updateUserList();
-                });
-            }
+    private void observeViewModel() {
+        viewModel.getUsers().observe(this, users -> {
+            allUsers = new ArrayList<>(users);
+            filteredUsers = new ArrayList<>(allUsers);
+            sortUsers(currentSortOption); // Apply current sort option
+            updateUserList();
+        });
 
-            @Override
-            public void onError(Exception e) {
-                runOnUiThread(() -> {
-                    hideLoading();
-                    showErrorMessage(e.getMessage());
-                });
+        viewModel.getIsLoading().observe(this, isLoading -> {
+            loadingProgressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        });
+
+        viewModel.getErrorMessage().observe(this, error -> {
+            if (error != null && !error.isEmpty()) {
+                showErrorMessage(error);
             }
         });
     }
@@ -157,6 +165,7 @@ public class UserListActivity extends AppCompatActivity {
                 filteredUsers.add(user);
             }
         }
+        sortUsers(currentSortOption); // Apply current sort option after filtering
         currentPage = 1;
         updateUserList();
     }
@@ -172,21 +181,19 @@ public class UserListActivity extends AppCompatActivity {
 
     private void updatePaginationInfo() {
         int totalPages = getTotalPages();
-        pageInfoTextView.setText("Page " + currentPage + " of " + totalPages);
-        prevButton.setEnabled(currentPage > 1);
-        nextButton.setEnabled(currentPage < totalPages);
+        if (filteredUsers.isEmpty()) {
+            pageInfoTextView.setText("No users found");
+            prevButton.setEnabled(false);
+            nextButton.setEnabled(false);
+        } else {
+            pageInfoTextView.setText("Page " + currentPage + " of " + totalPages);
+            prevButton.setEnabled(currentPage > 1);
+            nextButton.setEnabled(currentPage < totalPages);
+        }
     }
 
     private int getTotalPages() {
         return (int) Math.ceil((double) filteredUsers.size() / USERS_PER_PAGE);
-    }
-
-    private void showLoading() {
-        loadingProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void hideLoading() {
-        loadingProgressBar.setVisibility(View.GONE);
     }
 
     private void showErrorMessage(String message) {
@@ -194,6 +201,7 @@ public class UserListActivity extends AppCompatActivity {
     }
 
     private void sortUsers(int sortOption) {
+        currentSortOption = sortOption; // Save the current sort option
         switch (sortOption) {
             case 0: // Name
                 Collections.sort(filteredUsers, (u1, u2) -> u1.getFirstName().compareToIgnoreCase(u2.getFirstName()));
@@ -205,10 +213,9 @@ public class UserListActivity extends AppCompatActivity {
                 Collections.sort(filteredUsers, (u1, u2) -> u1.getCreatedAt().compareTo(u2.getCreatedAt()));
                 break;
         }
-        currentPage = 1;
+        currentPage = 1; // Reset to first page after sorting
         updateUserList();
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -218,13 +225,17 @@ public class UserListActivity extends AppCompatActivity {
                 int deletedUserId = data.getIntExtra("DELETED_USER_ID", -1);
                 if (deletedUserId != -1) {
                     removeUserFromList(deletedUserId);
-                    adapter.notifyDataSetChanged();
                 }
             } else if (data != null && data.hasExtra("UPDATED_USER")) {
                 User updatedUser = (User) data.getSerializableExtra("UPDATED_USER");
                 updateUserInList(updatedUser);
-                adapter.notifyDataSetChanged();
             }
+
+            // Reapply the current sort option and update the list
+            sortUsers(currentSortOption);
+
+            // Update the spinner selection to reflect the current sort option
+            sortSpinner.setSelection(currentSortOption);
         }
     }
 
@@ -237,6 +248,7 @@ public class UserListActivity extends AppCompatActivity {
                 iteratorAll.remove();
                 break;
             }
+
         }
 
         Iterator<User> iteratorFiltered = filteredUsers.iterator();
@@ -247,7 +259,7 @@ public class UserListActivity extends AppCompatActivity {
                 break;
             }
         }
-
+        sortUsers(currentSortOption); // Reapply sorting after removal
         updateUserList();
     }
 
@@ -264,6 +276,6 @@ public class UserListActivity extends AppCompatActivity {
                 break;
             }
         }
-        updateUserList(); // This method should update the RecyclerView
+        sortUsers(currentSortOption); // Reapply sorting after update
     }
 }

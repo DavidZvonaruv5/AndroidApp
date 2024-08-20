@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.hometask.model.User;
 
-@Database(entities = {User.class}, version = 2)
+@Database(entities = {User.class}, version = 2, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "user_database";
