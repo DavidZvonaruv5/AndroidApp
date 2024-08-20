@@ -12,4 +12,6 @@
     <string name="delete_user">Delete User</string>
     <string name="edit_user">Edit User</string>
     <string name="image_of_user">Image of user</string>
+    <string name="user_avatar">User Avatar</string>
+    <string name="add_user">Add User</string>
 </resources>

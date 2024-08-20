@@ -1,5 +1,6 @@
 package com.example.hometask.ui;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,11 +9,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.hometask.R;
 import com.example.hometask.model.User;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
@@ -72,10 +73,25 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         void bind(User user) {
             nameTextView.setText(user.getFirstName() + " " + user.getLastName());
             emailTextView.setText(user.getEmail());
-            Glide.with(itemView.getContext())
-                    .load(user.getAvatar())
-                    .circleCrop()
-                    .into(avatarImageView);
+
+            String avatarPath = user.getAvatar();
+            if (avatarPath != null && avatarPath.startsWith("android.resource://")) {
+                // It's a resource URI, load it as a resource
+                Uri resourceUri = Uri.parse(avatarPath);
+                Glide.with(itemView.getContext())
+                        .load(resourceUri)
+                        .circleCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable caching for resources
+                        .into(avatarImageView);
+            } else {
+                // It's a regular URL or null, load it as before
+                Glide.with(itemView.getContext())
+                        .load(avatarPath)
+                        .circleCrop()
+                        .placeholder(R.drawable.baseline_person_pin_24)
+                        .error(R.drawable.baseline_person_pin_24)
+                        .into(avatarImageView);
+            }
         }
     }
 }

@@ -24,6 +24,8 @@
         <activity android:name=".ui.UserListActivity"/>
         <activity android:name=".ui.UserDetailActivity" />
         <activity android:name=".ui.EditUserActivity" />
+        <activity android:name=".ui.AddUserActivity" />
+
 
     </application>
 

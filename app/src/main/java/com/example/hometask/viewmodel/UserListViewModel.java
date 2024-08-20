@@ -53,21 +53,30 @@ public class UserListViewModel extends AndroidViewModel {
         List<User> currentUsers = users.getValue();
         if (currentUsers != null) {
             List<User> updatedUsers = new ArrayList<>(currentUsers);
-            updatedUsers.removeIf(user -> user.getId() == userId);
-            users.postValue(updatedUsers);
-
-            // Update the database
-            userRepository.deleteUser(new User(userId, "", "", "", ""), new UserRepository.RepositoryCallback<Void>() {
-                @Override
-                public void onSuccess(Void result) {
-                    // User deleted successfully from the database
+            User userToRemove = null;
+            for (User user : updatedUsers) {
+                if (user.getId() == userId) {
+                    userToRemove = user;
+                    break;
                 }
+            }
+            if (userToRemove != null) {
+                updatedUsers.remove(userToRemove);
+                users.postValue(updatedUsers);
 
-                @Override
-                public void onError(Exception e) {
-                    errorMessage.postValue("Error deleting user: " + e.getMessage());
-                }
-            });
+                // Update the database
+                userRepository.deleteUser(userToRemove, new UserRepository.RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        // User deleted successfully from the database
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        errorMessage.postValue("Error deleting user: " + e.getMessage());
+                    }
+                });
+            }
         }
     }
 

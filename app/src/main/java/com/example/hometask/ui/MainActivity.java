@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         addUserButton.setOnClickListener(v -> {
-            // TODO: Implement navigation to AddUserActivity
-            Snackbar.make(findViewById(android.R.id.content), "Add User clicked", Snackbar.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, AddUserActivity.class);
+            startActivity(intent);
         });
 
         observeViewModel();

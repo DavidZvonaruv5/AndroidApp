@@ -143,4 +143,14 @@ public class UserRepository {
             }
         }).start();
     }
+    public void addUser(User user, RepositoryCallback<Long> callback) {
+        new Thread(() -> {
+            try {
+                long newUserId = userDao.insertUser(user);
+                callback.onSuccess(newUserId);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        }).start();
+    }
 }

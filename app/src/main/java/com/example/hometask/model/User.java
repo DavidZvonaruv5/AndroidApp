@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Entity(tableName = "users")
 public class User implements Serializable {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int id;
 
     private String email;
@@ -34,14 +34,14 @@ public class User implements Serializable {
     private Date createdAt;
 
     // Constructor
-    public User(int id, String email, String firstName, String lastName, String avatar) {
-        this.id = id;
+    public User(String email, String firstName, String lastName, String avatar) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.avatar = avatar;
         this.createdAt = new Date(); // Set current date when user is created
     }
+
 
     // Getters and setters
     public int getId() { return id; }

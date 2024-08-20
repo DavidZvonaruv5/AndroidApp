@@ -1,9 +1,5 @@
 package com.example.hometask.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,11 +12,18 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.hometask.R;
-import com.google.android.material.snackbar.Snackbar;
 import com.example.hometask.model.User;
 import com.example.hometask.viewmodel.UserListViewModel;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -210,7 +213,7 @@ public class UserListActivity extends AppCompatActivity {
                 Collections.sort(filteredUsers, (u1, u2) -> Integer.compare(u1.getId(), u2.getId()));
                 break;
             case 2: // Date Added
-                Collections.sort(filteredUsers, (u1, u2) -> u1.getCreatedAt().compareTo(u2.getCreatedAt()));
+                Collections.sort(filteredUsers, (u1, u2) -> u2.getCreatedAt().compareTo(u1.getCreatedAt()));
                 break;
         }
         currentPage = 1; // Reset to first page after sorting
