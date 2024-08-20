@@ -20,8 +20,6 @@ import retrofit2.Response;
 import java.util.ArrayList;
 
 public class UserRepository {
-    private static final String TAG = "UserRepository";
-
     private ApiService apiService;
     private UserDao userDao;
 
@@ -114,15 +112,11 @@ public class UserRepository {
     }
 
     public void deleteUser(User user, RepositoryCallback<Void> callback) {
-        Log.d(TAG, "Attempting to delete user with ID: " + user.getId());
         new Thread(() -> {
             try {
-                Log.d(TAG, "Deleting user from database...");
                 userDao.deleteUser(user);
-                Log.d(TAG, "User deleted successfully from database");
                 callback.onSuccess(null);
             } catch (Exception e) {
-                Log.e(TAG, "Error deleting user from database", e);
                 callback.onError(e);
             }
         }).start();

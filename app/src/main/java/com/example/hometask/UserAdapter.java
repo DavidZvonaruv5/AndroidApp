@@ -1,6 +1,5 @@
-package com.example.hometask.ui;
+package com.example.hometask;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +8,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import com.example.hometask.R;
 import com.example.hometask.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
-    private static final String TAG = "UserAdapter";
 
     private List<User> users = new ArrayList<>();
     private OnUserClickListener listener;
@@ -39,7 +37,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = users.get(position);
         holder.bind(user);
-        Log.d(TAG, "onBindViewHolder: Binding user at position " + position + ": " + user.getFirstName() + " " + user.getLastName());
     }
 
     @Override
@@ -48,7 +45,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     public void setUsers(List<User> users) {
-        Log.d(TAG, "setUsers: Received " + users.size() + " users");
         this.users = users;
         notifyDataSetChanged();
     }

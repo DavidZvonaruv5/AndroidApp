@@ -1,7 +1,6 @@
-package com.example.hometask.ui;
+package com.example.hometask;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,10 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.example.hometask.R;
+import com.example.hometask.model.User;
 import com.example.hometask.repository.UserRepository;
-import com.example.hometask.viewmodel.MainViewModel;
-import com.example.hometask.viewmodel.MainViewModelFactory;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,31 +18,21 @@ public class MainActivity extends AppCompatActivity {
     private Button syncUsersButton;
     private Button displayUsersButton;
     private Button addUserButton;
-    private MainViewModel viewModel;
+    private UserRepository userRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        UserRepository repository = new UserRepository(this);
-        MainViewModelFactory factory = new MainViewModelFactory(repository);
-        viewModel = new ViewModelProvider(this, factory).get(MainViewModel.class);
-
-        initializeViews();
-        setupListeners();
-        observeViewModel();
-    }
-
-    private void initializeViews() {
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
         syncUsersButton = findViewById(R.id.loadUsersButton);
         displayUsersButton = findViewById(R.id.displayUsersButton);
         addUserButton = findViewById(R.id.addUserButton);
-    }
 
-    private void setupListeners() {
-        syncUsersButton.setOnClickListener(v -> viewModel.syncUsers());
+        userRepository = new UserRepository(this);
+
+        syncUsersButton.setOnClickListener(v -> syncUsers());
 
         displayUsersButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, UserListActivity.class);
@@ -53,25 +41,43 @@ public class MainActivity extends AppCompatActivity {
 
         addUserButton.setOnClickListener(v -> {
             // TODO: Implement navigation to AddUserActivity
-            Snackbar.make(findViewById(android.R.id.content), "Add User feature not implemented yet", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(findViewById(android.R.id.content), "Add User clicked", Snackbar.LENGTH_SHORT).show();
         });
     }
 
-    private void observeViewModel() {
-        viewModel.getIsLoading().observe(this, this::showLoading);
-        viewModel.getError().observe(this, this::showErrorMessage);
-        viewModel.getSyncSuccess().observe(this, success -> {
-            if (success) {
-                showSyncSuccessMessage();
+    private void syncUsers() {
+        showLoading();
+        userRepository.getAllUsers(new UserRepository.RepositoryCallback<List<User>>() {
+            @Override
+            public void onSuccess(List<User> result) {
+                runOnUiThread(() -> {
+                    hideLoading();
+                    showSyncSuccessMessage();
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> {
+                    hideLoading();
+                    showErrorMessage(e.getMessage());
+                });
             }
         });
     }
 
-    private void showLoading(Boolean isLoading) {
-        loadingProgressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        syncUsersButton.setEnabled(!isLoading);
-        displayUsersButton.setEnabled(!isLoading);
-        addUserButton.setEnabled(!isLoading);
+    private void showLoading() {
+        loadingProgressBar.setVisibility(View.VISIBLE);
+        syncUsersButton.setEnabled(false);
+        displayUsersButton.setEnabled(false);
+        addUserButton.setEnabled(false);
+    }
+
+    private void hideLoading() {
+        loadingProgressBar.setVisibility(View.GONE);
+        syncUsersButton.setEnabled(true);
+        displayUsersButton.setEnabled(true);
+        addUserButton.setEnabled(true);
     }
 
     private void showSyncSuccessMessage() {

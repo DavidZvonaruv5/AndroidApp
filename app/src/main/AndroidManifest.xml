@@ -15,15 +15,15 @@
         android:theme="@style/Theme.HomeTask"
         tools:targetApi="31">
 
-        <activity android:name=".ui.MainActivity" android:exported="true">
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.UserListActivity" />
-        <activity android:name=".ui.UserDetailActivity" />
-        <activity android:name=".ui.EditUserActivity" />
+        <activity android:name=".UserListActivity"/>
+        <activity android:name=".UserDetailActivity" />
+        <activity android:name=".EditUserActivity" />
 
     </application>
 
