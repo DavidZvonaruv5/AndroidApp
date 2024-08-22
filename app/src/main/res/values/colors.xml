@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- New color scheme -->
-    <color name="primary">#3F51B5</color>
+    <color name="primary">#265C4B</color>
     <color name="primary_dark">#303F9F</color>
     <color name="primary_light">#C5CAE9</color>
     <color name="accent">#FF4081</color>
@@ -9,7 +9,7 @@
     <color name="secondary_text">#757575</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
-    <color name="background_cream">#FFF8E1</color>
+    <color name="background_cream">#F2F2F2</color>
     <color name="danger">#FF0000</color>
     <color name="text_primary">#000000</color>
     <color name="text_hint">#757575</color>

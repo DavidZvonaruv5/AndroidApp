@@ -5,21 +5,27 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
+
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import com.example.hometask.model.User;
 import com.example.hometask.repository.UserRepository;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class EditUserViewModel extends AndroidViewModel {
-    private UserRepository userRepository;
-    private MutableLiveData<User> user = new MutableLiveData<>();
-    private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>(false);
+    private static final String TAG = "EditUserViewModel";
+
+    private final UserRepository userRepository;
+    private final MutableLiveData<User> user = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>(false);
 
     public EditUserViewModel(Application application) {
         super(application);
@@ -59,7 +65,9 @@ public class EditUserViewModel extends AndroidViewModel {
 
         if (selectedImageUri != null) {
             String imagePath = saveImageToInternalStorage(selectedImageUri);
-            currentUser.setAvatar(imagePath);
+            if (imagePath != null) {
+                currentUser.setAvatar(imagePath);
+            }
         }
 
         isLoading.setValue(true);
@@ -83,13 +91,18 @@ public class EditUserViewModel extends AndroidViewModel {
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), imageUri);
             File directory = getApplication().getDir("images", Context.MODE_PRIVATE);
-            File file = new File(directory, "avatar_" + user.getValue().getId() + ".jpg");
+            User currentUser = user.getValue();
+            if (currentUser == null) {
+                Log.e(TAG, "Current user is null when trying to save image");
+                return null;
+            }
+            File file = new File(directory, "avatar_" + currentUser.getId() + ".jpg");
             FileOutputStream fos = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
             fos.close();
             return file.getAbsolutePath();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error saving image: " + e.getMessage(), e);
             errorMessage.postValue("Error saving image: " + e.getMessage());
             return null;
         }

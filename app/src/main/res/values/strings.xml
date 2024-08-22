@@ -14,4 +14,21 @@
     <string name="image_of_user">Image of user</string>
     <string name="user_avatar">User Avatar</string>
     <string name="add_user">Add User</string>
+    <string name="total_users">Total Users: %1$d</string>
+    <string name="recently_added">Recently Added: %1$d</string>
+    <string name="user_full_name">%1$s %2$s</string>
+    <string name="user_deleted_successfully">User deleted successfully</string>
+    <string name="user_updated_successfully">User updated successfully</string>
+    <string name="delete_user_confirmation">Are you sure you want to delete this user?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_users_found">No users found</string>
+    <string name="page_info">Page %1$d of %2$d</string>
+    <string name="error_message">Error: %1$s</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="total_users_0">Total Users: 0</string>
+    <string name="recently_added_0">Recently Added: 0</string>
+    <string name="display_users">Display Users</string>
+    <string name="add_user_2">Add User</string>
+    <string name="load_users">Load Users</string>
 </resources>

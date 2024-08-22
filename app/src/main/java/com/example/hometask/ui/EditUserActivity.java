@@ -1,34 +1,31 @@
 package com.example.hometask.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.content.Context;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.app.AlertDialog;
-import android.view.LayoutInflater;
-import android.view.View;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.hometask.R;
 import com.example.hometask.model.User;
 import com.example.hometask.viewmodel.EditUserViewModel;
 
-import java.io.File;
-
 
 public class EditUserActivity extends AppCompatActivity {
-    private static final int PICK_IMAGE_REQUEST = 1;
 
     private AlertDialog progressDialog;
     private ImageButton backButton;
@@ -38,10 +35,32 @@ public class EditUserActivity extends AppCompatActivity {
     private Uri selectedImageUri;
     private EditUserViewModel viewModel;
 
+    private final ActivityResultLauncher<String> pickImage = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    selectedImageUri = uri;
+                    Glide.with(this)
+                            .load(selectedImageUri)
+                            .placeholder(R.drawable.baseline_person_pin_24)
+                            .error(R.drawable.baseline_person_pin_24)
+                            .circleCrop()
+                            .into(avatarImageView);
+                } else {
+                    Toast.makeText(this, "Image selection cancelled", Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user);
+
+        // Set light status bar
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(true);
 
         viewModel = new ViewModelProvider(this).get(EditUserViewModel.class);
 
@@ -78,7 +97,12 @@ public class EditUserActivity extends AppCompatActivity {
                 firstNameEditText.setText(user.getFirstName());
                 lastNameEditText.setText(user.getLastName());
                 emailEditText.setText(user.getEmail());
-                Glide.with(this).load(user.getAvatar()).circleCrop().into(avatarImageView);
+                Glide.with(this)
+                        .load(user.getAvatar())
+                        .placeholder(R.drawable.baseline_person_pin_24) // Add this line
+                        .error(R.drawable.baseline_person_pin_24) // Add this line
+                        .circleCrop()
+                        .into(avatarImageView);
             }
         });
 
@@ -118,25 +142,13 @@ public class EditUserActivity extends AppCompatActivity {
     }
 
     private void openImageChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            selectedImageUri = data.getData();
-            Glide.with(this).load(selectedImageUri).circleCrop().into(avatarImageView);
-        }
+        pickImage.launch("image/*");
     }
 
     private void saveChanges() {
-        String firstName = firstNameEditText.getText().toString().trim();
-        String lastName = lastNameEditText.getText().toString().trim();
-        String email = emailEditText.getText().toString().trim();
+        String firstName = firstNameEditText.getText() != null ? firstNameEditText.getText().toString().trim() : "";
+        String lastName = lastNameEditText.getText() != null ? lastNameEditText.getText().toString().trim() : "";
+        String email = emailEditText.getText() != null ? emailEditText.getText().toString().trim() : "";
 
         if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()) {
             Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
@@ -145,6 +157,4 @@ public class EditUserActivity extends AppCompatActivity {
 
         viewModel.updateUser(firstName, lastName, email, selectedImageUri);
     }
-
-
 }

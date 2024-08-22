@@ -8,12 +8,12 @@ import com.example.hometask.model.User;
 import com.example.hometask.repository.UserRepository;
 
 public class UserDetailViewModel extends AndroidViewModel {
-    private UserRepository userRepository;
-    private MutableLiveData<User> user = new MutableLiveData<>();
-    private MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<Boolean> userDeleted = new MutableLiveData<>(false);
-    private MutableLiveData<Boolean> userUpdated = new MutableLiveData<>(false);
+    private final UserRepository userRepository;
+    private final MutableLiveData<User> user = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> userDeleted = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> userUpdated = new MutableLiveData<>(false);
 
     public UserDetailViewModel(Application application) {
         super(application);

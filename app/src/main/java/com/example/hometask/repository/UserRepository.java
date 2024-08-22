@@ -1,8 +1,8 @@
 package com.example.hometask.repository;
 
 import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.example.hometask.api.ApiResponse;
 import com.example.hometask.api.ApiService;
@@ -11,17 +11,20 @@ import com.example.hometask.database.AppDatabase;
 import com.example.hometask.database.UserDao;
 import com.example.hometask.model.User;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import java.util.ArrayList;
 
 public class UserRepository {
-    private ApiService apiService;
-    private UserDao userDao;
+    private final ApiService apiService;
+    private final UserDao userDao;
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
     public interface RepositoryCallback<T> {
         void onSuccess(T result);
@@ -34,21 +37,32 @@ public class UserRepository {
         userDao = db.userDao();
     }
 
+    public void syncUsersFromApi(final RepositoryCallback<List<User>> callback) {
+        getAllUsers(new RepositoryCallback<List<User>>() {
+            @Override
+            public void onSuccess(List<User> apiUsers) {
+                mergeUsersWithDatabase(apiUsers, callback);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
     public void getAllUsers(final RepositoryCallback<List<User>> callback) {
         final List<User> allUsers = new ArrayList<>();
 
-        // Fetch page 1
         fetchUsersFromPage(1, new RepositoryCallback<List<User>>() {
             @Override
             public void onSuccess(List<User> users) {
                 allUsers.addAll(users);
 
-                // Fetch page 2
                 fetchUsersFromPage(2, new RepositoryCallback<List<User>>() {
                     @Override
                     public void onSuccess(List<User> users) {
                         allUsers.addAll(users);
-                        saveUsersToDatabase(allUsers);
                         callback.onSuccess(allUsers);
                     }
 
@@ -67,21 +81,20 @@ public class UserRepository {
     }
 
     public void getUsersFromDatabase(RepositoryCallback<List<User>> callback) {
-        new Thread(() -> {
+        executor.execute(() -> {
             try {
                 List<User> users = userDao.getAllUsers();
                 callback.onSuccess(users);
             } catch (Exception e) {
                 callback.onError(e);
             }
-        }).start();
+        });
     }
-
 
     private void fetchUsersFromPage(int page, final RepositoryCallback<List<User>> callback) {
         apiService.getUsers(page).enqueue(new Callback<ApiResponse<List<User>>>() {
             @Override
-            public void onResponse(Call<ApiResponse<List<User>>> call, Response<ApiResponse<List<User>>> response) {
+            public void onResponse(@NonNull Call<ApiResponse<List<User>>> call, @NonNull Response<ApiResponse<List<User>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<User> users = response.body().getData();
                     callback.onSuccess(users);
@@ -91,66 +104,57 @@ public class UserRepository {
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<List<User>>> call, Throwable t) {
+            public void onFailure(@NonNull Call<ApiResponse<List<User>>> call, @NonNull Throwable t) {
                 callback.onError(new Exception(t));
             }
         });
     }
 
-    private void saveUsersToDatabase(final List<User> users) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Date now = new Date();
-                for (User user : users) {
-                    user.setCreatedAt(now);
+    private void mergeUsersWithDatabase(final List<User> apiUsers, final RepositoryCallback<List<User>> callback) {
+        executor.execute(() -> {
+            List<User> newUsers = new ArrayList<>();
+            for (User apiUser : apiUsers) {
+                User existingUser = userDao.getUserById(apiUser.getId());
+                if (existingUser == null) {
+                    apiUser.setCreatedAt(new Date());
+                    userDao.insertUser(apiUser);
+                    newUsers.add(apiUser);
                 }
-                userDao.deleteAllUsers(); // Clear existing users
-                userDao.insertUsers(users);
             }
-        }).start();
+            callback.onSuccess(newUsers);
+        });
     }
 
     public void deleteUser(User user, RepositoryCallback<Void> callback) {
-        new Thread(() -> {
+        executor.execute(() -> {
             try {
                 userDao.deleteUser(user);
                 callback.onSuccess(null);
             } catch (Exception e) {
                 callback.onError(e);
             }
-        }).start();
+        });
     }
 
     public void updateUser(User user, RepositoryCallback<Void> callback) {
-        new Thread(() -> {
+        executor.execute(() -> {
             try {
                 userDao.updateUser(user);
                 callback.onSuccess(null);
             } catch (Exception e) {
                 callback.onError(e);
             }
-        }).start();
+        });
     }
 
-    public void getUserById(int userId, RepositoryCallback<User> callback) {
-        new Thread(() -> {
-            try {
-                User user = userDao.getUserById(userId);
-                callback.onSuccess(user);
-            } catch (Exception e) {
-                callback.onError(e);
-            }
-        }).start();
-    }
     public void addUser(User user, RepositoryCallback<Long> callback) {
-        new Thread(() -> {
+        executor.execute(() -> {
             try {
                 long newUserId = userDao.insertUser(user);
                 callback.onSuccess(newUserId);
             } catch (Exception e) {
                 callback.onError(e);
             }
-        }).start();
+        });
     }
 }

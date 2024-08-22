@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
+
     <style name="Theme.HomeTask" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here -->
         <item name="colorPrimary">@color/purple_500</item>
@@ -10,6 +11,7 @@
 
         <!-- Set status bar color to match background -->
         <item name="android:statusBarColor">@color/background_cream</item>
+        <item name="android:windowLightStatusBar">true</item>
 
         <!-- Ensure the background color is applied to the whole window -->
         <item name="android:windowBackground">@color/background_cream</item>

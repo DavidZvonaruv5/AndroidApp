@@ -1,6 +1,5 @@
 package com.example.hometask.ui;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
@@ -8,8 +7,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -19,7 +21,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class AddUserActivity extends AppCompatActivity {
 
-    private static final int PICK_IMAGE_REQUEST = 1;
+    public static final int RESULT_USER_ADDED = 2;
 
     private ImageButton backButton;
     private ImageView avatarImageView;
@@ -31,10 +33,25 @@ public class AddUserActivity extends AppCompatActivity {
     private Uri selectedImageUri;
     private AddUserViewModel viewModel;
 
+    private final ActivityResultLauncher<String> pickImage = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    selectedImageUri = uri;
+                    Glide.with(this).load(selectedImageUri).circleCrop().into(avatarImageView);
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_user);
+
+        // Set light status bar
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(true);
 
         viewModel = new ViewModelProvider(this).get(AddUserViewModel.class);
 
@@ -61,14 +78,11 @@ public class AddUserActivity extends AppCompatActivity {
 
     private void setupListeners() {
         backButton.setOnClickListener(v -> finish());
-        changeAvatarButton.setOnClickListener(v -> openImageChooser());
+        changeAvatarButton.setOnClickListener(v -> pickImage.launch("image/*"));
         addUserButton.setOnClickListener(v -> addUser());
     }
 
     private void observeViewModel() {
-        viewModel.getIsLoading().observe(this, isLoading -> {
-            // TODO: Show/hide loading indicator
-        });
 
         viewModel.getErrorMessage().observe(this, error -> {
             if (error != null && !error.isEmpty()) {
@@ -79,32 +93,16 @@ public class AddUserActivity extends AppCompatActivity {
         viewModel.getAddSuccess().observe(this, success -> {
             if (success) {
                 Toast.makeText(this, "User added successfully", Toast.LENGTH_SHORT).show();
-                setResult(RESULT_OK);
+                setResult(RESULT_USER_ADDED);
                 finish();
             }
         });
     }
 
-    private void openImageChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            selectedImageUri = data.getData();
-            Glide.with(this).load(selectedImageUri).circleCrop().into(avatarImageView);
-        }
-    }
-
     private void addUser() {
-        String firstName = firstNameEditText.getText().toString().trim();
-        String lastName = lastNameEditText.getText().toString().trim();
-        String email = emailEditText.getText().toString().trim();
+        String firstName = firstNameEditText.getText() != null ? firstNameEditText.getText().toString().trim() : "";
+        String lastName = lastNameEditText.getText() != null ? lastNameEditText.getText().toString().trim() : "";
+        String email = emailEditText.getText() != null ? emailEditText.getText().toString().trim() : "";
 
         if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_LONG).show();

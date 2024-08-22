@@ -22,15 +22,11 @@ public interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertUser(User user);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertUsers(List<User> users);
-
     @Update
     void updateUser(User user);
 
     @Delete
     void deleteUser(User user);
 
-    @Query("DELETE FROM users")
-    void deleteAllUsers();
+
 }

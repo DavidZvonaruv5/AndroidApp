@@ -1,6 +1,7 @@
 package com.example.hometask.ui;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,7 +14,11 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +31,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,20 +45,47 @@ public class UserListActivity extends AppCompatActivity {
     private ImageButton backButton;
     private TextInputEditText searchEditText;
     private Spinner sortSpinner;
-
     private UserListViewModel viewModel;
     private List<User> allUsers = new ArrayList<>();
     private List<User> filteredUsers = new ArrayList<>();
     private int currentPage = 1;
     private static final int USERS_PER_PAGE = 5;
     private static final String[] SORT_OPTIONS = {"Name", "ID", "Date Added"};
-    private static final int REQUEST_USER_DETAIL = 1;
     private int currentSortOption = 1; // Default to ID sorting
+
+    private final ActivityResultLauncher<Intent> userDetailLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        if (data.hasExtra("DELETED_USER_ID")) {
+                            int deletedUserId = data.getIntExtra("DELETED_USER_ID", -1);
+                            if (deletedUserId != -1) {
+                                removeUserFromList(deletedUserId);
+                            }
+                        } else if (data.hasExtra("UPDATED_USER")) {
+                            User updatedUser = (User) data.getSerializableExtra("UPDATED_USER");
+                            if (updatedUser != null) {
+                                updateUserInList(updatedUser);
+                            }
+                        }
+                        sortUsers(currentSortOption);
+                        sortSpinner.setSelection(currentSortOption);
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
+
+        // Set light status bar
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(true);
 
         viewModel = new ViewModelProvider(this).get(UserListViewModel.class);
 
@@ -77,7 +110,7 @@ public class UserListActivity extends AppCompatActivity {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, SORT_OPTIONS);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortSpinner.setAdapter(spinnerAdapter);
-        sortSpinner.setSelection(currentSortOption); // Start sorting by ID
+        sortSpinner.setSelection(currentSortOption);
     }
 
     private void setupRecyclerView() {
@@ -129,7 +162,7 @@ public class UserListActivity extends AppCompatActivity {
         adapter.setOnUserClickListener(user -> {
             Intent intent = new Intent(UserListActivity.this, UserDetailActivity.class);
             intent.putExtra("USER", user);
-            startActivityForResult(intent, REQUEST_USER_DETAIL);
+            userDetailLauncher.launch(intent);
         });
     }
 
@@ -137,13 +170,12 @@ public class UserListActivity extends AppCompatActivity {
         viewModel.getUsers().observe(this, users -> {
             allUsers = new ArrayList<>(users);
             filteredUsers = new ArrayList<>(allUsers);
-            sortUsers(currentSortOption); // Apply current sort option
+            sortUsers(currentSortOption);
             updateUserList();
         });
 
-        viewModel.getIsLoading().observe(this, isLoading -> {
-            loadingProgressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        });
+        viewModel.getIsLoading().observe(this, isLoading ->
+                loadingProgressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE));
 
         viewModel.getErrorMessage().observe(this, error -> {
             if (error != null && !error.isEmpty()) {
@@ -168,7 +200,7 @@ public class UserListActivity extends AppCompatActivity {
                 filteredUsers.add(user);
             }
         }
-        sortUsers(currentSortOption); // Apply current sort option after filtering
+        sortUsers(currentSortOption);
         currentPage = 1;
         updateUserList();
     }
@@ -178,18 +210,18 @@ public class UserListActivity extends AppCompatActivity {
         int end = Math.min(start + USERS_PER_PAGE, filteredUsers.size());
         List<User> usersToShow = filteredUsers.subList(start, end);
 
-        adapter.setUsers(usersToShow);
+        adapter.submitList(usersToShow);
         updatePaginationInfo();
     }
 
     private void updatePaginationInfo() {
         int totalPages = getTotalPages();
         if (filteredUsers.isEmpty()) {
-            pageInfoTextView.setText("No users found");
+            pageInfoTextView.setText(R.string.no_users_found);
             prevButton.setEnabled(false);
             nextButton.setEnabled(false);
         } else {
-            pageInfoTextView.setText("Page " + currentPage + " of " + totalPages);
+            pageInfoTextView.setText(getString(R.string.page_info, currentPage, totalPages));
             prevButton.setEnabled(currentPage > 1);
             nextButton.setEnabled(currentPage < totalPages);
         }
@@ -200,48 +232,27 @@ public class UserListActivity extends AppCompatActivity {
     }
 
     private void showErrorMessage(String message) {
-        Snackbar.make(findViewById(android.R.id.content), "Error: " + message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(android.R.id.content), getString(R.string.error_message, message), Snackbar.LENGTH_LONG).show();
     }
 
     private void sortUsers(int sortOption) {
-        currentSortOption = sortOption; // Save the current sort option
+        currentSortOption = sortOption;
         switch (sortOption) {
             case 0: // Name
                 Collections.sort(filteredUsers, (u1, u2) -> u1.getFirstName().compareToIgnoreCase(u2.getFirstName()));
                 break;
             case 1: // ID
-                Collections.sort(filteredUsers, (u1, u2) -> Integer.compare(u1.getId(), u2.getId()));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Collections.sort(filteredUsers, Comparator.comparingInt(User::getId));
+                }
                 break;
             case 2: // Date Added
                 Collections.sort(filteredUsers, (u1, u2) -> u2.getCreatedAt().compareTo(u1.getCreatedAt()));
                 break;
         }
-        currentPage = 1; // Reset to first page after sorting
+        currentPage = 1;
         updateUserList();
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_USER_DETAIL && resultCode == RESULT_OK) {
-            if (data != null && data.hasExtra("DELETED_USER_ID")) {
-                int deletedUserId = data.getIntExtra("DELETED_USER_ID", -1);
-                if (deletedUserId != -1) {
-                    removeUserFromList(deletedUserId);
-                }
-            } else if (data != null && data.hasExtra("UPDATED_USER")) {
-                User updatedUser = (User) data.getSerializableExtra("UPDATED_USER");
-                updateUserInList(updatedUser);
-            }
-
-            // Reapply the current sort option and update the list
-            sortUsers(currentSortOption);
-
-            // Update the spinner selection to reflect the current sort option
-            sortSpinner.setSelection(currentSortOption);
-        }
-    }
-
 
     private void removeUserFromList(int userId) {
         Iterator<User> iteratorAll = allUsers.iterator();
@@ -251,7 +262,6 @@ public class UserListActivity extends AppCompatActivity {
                 iteratorAll.remove();
                 break;
             }
-
         }
 
         Iterator<User> iteratorFiltered = filteredUsers.iterator();
@@ -262,7 +272,7 @@ public class UserListActivity extends AppCompatActivity {
                 break;
             }
         }
-        sortUsers(currentSortOption); // Reapply sorting after removal
+        sortUsers(currentSortOption);
         updateUserList();
     }
 
@@ -279,6 +289,6 @@ public class UserListActivity extends AppCompatActivity {
                 break;
             }
         }
-        sortUsers(currentSortOption); // Reapply sorting after update
+        sortUsers(currentSortOption);
     }
 }
