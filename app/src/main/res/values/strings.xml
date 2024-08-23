@@ -31,4 +31,10 @@
     <string name="display_users">Display Users</string>
     <string name="add_user_2">Add User</string>
     <string name="load_users">Load Users</string>
+    <string name="search_users">Search users</string>
+    <string name="previous">Previous</string>
+    <string name="page_1_of_1">Page 1 of 1</string>
+    <string name="next">Next</string>
+    <string name="saving_changes">Saving changes…</string>
+    <string name="image_of_the_user">Image of the user</string>
 </resources>

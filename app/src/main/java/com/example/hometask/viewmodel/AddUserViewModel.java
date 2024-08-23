@@ -23,10 +23,6 @@ public class AddUserViewModel extends AndroidViewModel {
         userRepository = new UserRepository(application);
     }
 
-    public LiveData<Boolean> getIsLoading() {
-        return isLoading;
-    }
-
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }
@@ -50,7 +46,6 @@ public class AddUserViewModel extends AndroidViewModel {
             public void onSuccess(Long newUserId) {
                 isLoading.postValue(false);
                 addSuccess.postValue(true);
-                // You can do something with the newUserId if needed
             }
 
             @Override

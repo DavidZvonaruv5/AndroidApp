@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/baseline_arrow_back_24"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="16dp"
+        android:padding="@dimen/medium_padding"
         android:contentDescription="@string/back"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,23 +28,25 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="@dimen/medium_margin"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/searchInputLayout"
-        style="@style/AppEditText"
+        style="@style/AppTextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/medium_margin"
         app:layout_constraintTop_toBottomOf="@id/titleTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_max="@dimen/max_input_width">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/searchEditText"
+            style="@style/AppTextInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Search users"
+            android:hint="@string/search_users"
             android:inputType="text"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -54,16 +56,17 @@
         style="@style/AppSpinner"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/medium_margin"
         app:layout_constraintTop_toBottomOf="@id/searchInputLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_max="@dimen/max_input_width" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/medium_margin"
         app:layout_constraintBottom_toTopOf="@id/paginationLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +77,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="@dimen/medium_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -84,7 +87,7 @@
             style="@style/AppButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Previous"/>
+            android:text="@string/previous"/>
 
         <TextView
             android:id="@+id/pageInfoTextView"
@@ -93,14 +96,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Page 1 of 1"/>
+            android:text="@string/page_1_of_1"/>
 
         <Button
             android:id="@+id/nextButton"
             style="@style/AppButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next"/>
+            android:text="@string/next"/>
 
     </LinearLayout>
 
