@@ -19,6 +19,10 @@ import com.example.hometask.R;
 import com.example.hometask.viewmodel.AddUserViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
+/**
+ * AddUserActivity allows the user to add a new user to the system.
+ * It provides UI for inputting user details and selecting an avatar image.
+ */
 public class AddUserActivity extends AppCompatActivity {
 
     public static final int RESULT_USER_ADDED = 2;
@@ -33,6 +37,9 @@ public class AddUserActivity extends AppCompatActivity {
     private Uri selectedImageUri;
     private AddUserViewModel viewModel;
 
+    /**
+     * ActivityResultLauncher for picking an image from the device storage.
+     */
     private final ActivityResultLauncher<String> pickImage = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
@@ -66,6 +73,9 @@ public class AddUserActivity extends AppCompatActivity {
                 .into(avatarImageView);
     }
 
+    /**
+     * Initializes the views by finding them in the layout.
+     */
     private void initViews() {
         backButton = findViewById(R.id.backButton);
         avatarImageView = findViewById(R.id.avatarImageView);
@@ -76,14 +86,19 @@ public class AddUserActivity extends AppCompatActivity {
         addUserButton = findViewById(R.id.addUserButton);
     }
 
+    /**
+     * Sets up click listeners for the buttons.
+     */
     private void setupListeners() {
         backButton.setOnClickListener(v -> finish());
         changeAvatarButton.setOnClickListener(v -> pickImage.launch("image/*"));
         addUserButton.setOnClickListener(v -> addUser());
     }
 
+    /**
+     * Observes the ViewModel for changes and updates the UI accordingly.
+     */
     private void observeViewModel() {
-
         viewModel.getErrorMessage().observe(this, error -> {
             if (error != null && !error.isEmpty()) {
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
@@ -99,6 +114,9 @@ public class AddUserActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Validates user input and calls the ViewModel to add the user.
+     */
     private void addUser() {
         String firstName = firstNameEditText.getText() != null ? firstNameEditText.getText().toString().trim() : "";
         String lastName = lastNameEditText.getText() != null ? lastNameEditText.getText().toString().trim() : "";

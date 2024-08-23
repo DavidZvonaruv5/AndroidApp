@@ -54,12 +54,14 @@
     <Spinner
         android:id="@+id/sortSpinner"
         style="@style/AppSpinner"
-        android:layout_width="0dp"
+        android:layout_width="101dp"
         android:layout_height="48dp"
         android:layout_margin="@dimen/medium_margin"
-        app:layout_constraintTop_toBottomOf="@id/searchInputLayout"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.028"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchInputLayout"
         app:layout_constraintWidth_max="@dimen/max_input_width" />
 
     <androidx.recyclerview.widget.RecyclerView

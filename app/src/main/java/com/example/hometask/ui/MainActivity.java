@@ -23,7 +23,10 @@ import com.example.hometask.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.example.hometask.viewmodel.MainViewModel;
 
-
+/**
+ * MainActivity serves as the main dashboard of the application.
+ * It displays user statistics, inspirational quotes, and provides navigation to other features.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private ProgressBar loadingProgressBar;
@@ -38,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private final Handler quoteHandler = new Handler();
     private int currentQuoteIndex = 0;
 
-
+    /**
+     * Array of inspirational quotes to be displayed in rotation.
+     */
     private final String[] quotes = {
             "The secret of getting ahead is getting started.",
             "Don't watch the clock; do what it does. Keep going.",
@@ -47,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
             "Believe you can and you're halfway there."
     };
 
+    /**
+     * Runnable for rotating quotes at a fixed interval.
+     */
     private final Runnable quoteRunnable = new Runnable() {
         @Override
         public void run() {
@@ -55,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * ActivityResultLauncher for handling the result of adding a new user.
+     */
     private final ActivityResultLauncher<Intent> addUserLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -69,15 +80,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Set light status bar
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(true);
-
-        // Ensure status bar icons are visible on light background
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        }
+        setupStatusBar();
         titleTextView = findViewById(R.id.titleTextView);
         animateTitle();
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
@@ -92,6 +95,22 @@ public class MainActivity extends AppCompatActivity {
         viewModel.loadDashboardData();
     }
 
+    /**
+     * Sets up the status bar to use light icons on a light background.
+     */
+    private void setupStatusBar() {
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+    }
+
+    /**
+     * Initializes views by finding them in the layout.
+     */
     private void initViews() {
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
         syncUsersButton = findViewById(R.id.loadUsersButton);
@@ -102,19 +121,21 @@ public class MainActivity extends AppCompatActivity {
         quoteTextView = findViewById(R.id.quoteTextView);
     }
 
+    /**
+     * Animates the title with a combination of pulse and float animations.
+     */
     private void animateTitle() {
         AnimationSet animationSet = new AnimationSet(true);
-
         Animation pulseAnimation = AnimationUtils.loadAnimation(this, R.anim.pulse_animation);
         Animation floatAnimation = AnimationUtils.loadAnimation(this, R.anim.float_animation);
-
         animationSet.addAnimation(pulseAnimation);
         animationSet.addAnimation(floatAnimation);
-
         titleTextView.startAnimation(animationSet);
     }
 
-
+    /**
+     * Sets up animations for various UI elements.
+     */
     private void setupAnimations() {
         Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
         fadeIn.setDuration(1000);
@@ -129,6 +150,9 @@ public class MainActivity extends AppCompatActivity {
         syncUsersButton.startAnimation(buttonAnimation);
     }
 
+    /**
+     * Sets up click listeners for buttons.
+     */
     private void setupClickListeners() {
         syncUsersButton.setOnClickListener(v -> {
             viewModel.syncUsers();
@@ -140,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             animateButton(v);
         });
+
         addUserButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, AddUserActivity.class);
             addUserLauncher.launch(intent);
@@ -147,11 +172,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Animates a button with a scale animation.
+     *
+     * @param v The view (button) to animate.
+     */
     private void animateButton(View v) {
         Animation scaleAnimation = AnimationUtils.loadAnimation(this, R.anim.button_scale);
         v.startAnimation(scaleAnimation);
     }
 
+    /**
+     * Sets up observers for the ViewModel's LiveData.
+     */
     private void observeViewModel() {
         viewModel.getIsLoading().observe(this, this::updateLoadingState);
         viewModel.getErrorMessage().observe(this, this::showErrorMessage);
@@ -160,6 +193,11 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getRecentlyAddedUsers().observe(this, this::updateRecentlyAdded);
     }
 
+    /**
+     * Updates the UI loading state.
+     *
+     * @param isLoading Boolean indicating if the app is in a loading state.
+     */
     private void updateLoadingState(Boolean isLoading) {
         loadingProgressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         syncUsersButton.setEnabled(!isLoading);
@@ -167,47 +205,73 @@ public class MainActivity extends AppCompatActivity {
         addUserButton.setEnabled(!isLoading);
     }
 
+    /**
+     * Shows a success message when syncing is complete.
+     *
+     * @param success Boolean indicating if the sync was successful.
+     */
     private void showSyncSuccessMessage(Boolean success) {
         if (success) {
             Snackbar.make(findViewById(android.R.id.content), "Syncing successful", Snackbar.LENGTH_LONG).show();
         }
     }
 
+    /**
+     * Shows an error message.
+     *
+     * @param message The error message to display.
+     */
     private void showErrorMessage(String message) {
         Snackbar.make(findViewById(android.R.id.content), "Error: " + message, Snackbar.LENGTH_LONG).show();
     }
 
+    /**
+     * Updates the total users count in the UI.
+     *
+     * @param total The total number of users.
+     */
     private void updateTotalUsers(int total) {
         totalUsersTextView.setText(getString(R.string.total_users, total));
         Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
         totalUsersTextView.startAnimation(fadeIn);
     }
 
+    /**
+     * Updates the recently added users count in the UI.
+     *
+     * @param count The number of recently added users.
+     */
     private void updateRecentlyAdded(int count) {
         recentlyAddedTextView.setText(getString(R.string.recently_added, count));
         Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
         recentlyAddedTextView.startAnimation(fadeIn);
     }
 
+    /**
+     * Sets the next quote in the rotation.
+     */
     private void setNextQuote() {
         String quote = quotes[currentQuoteIndex];
         quoteTextView.setText(quote);
         Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
         quoteTextView.startAnimation(fadeIn);
 
-        // Move to the next quote, reset to 0 if we've reached the end
         currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
     }
 
+    /**
+     * Starts the quote rotation.
+     */
     private void startQuoteRotation() {
         quoteHandler.postDelayed(quoteRunnable, 7000); // Start after 7 seconds
     }
 
+    /**
+     * Stops the quote rotation.
+     */
     private void stopQuoteRotation() {
         quoteHandler.removeCallbacks(quoteRunnable);
     }
-
-
 
     @Override
     protected void onResume() {

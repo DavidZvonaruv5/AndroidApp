@@ -4,7 +4,7 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
         <item name="android:padding">12dp</item>
-        <item name="cornerRadius">8dp</item>
+        <item name="cornerRadius">20dp</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="backgroundTint">@color/primary</item>
@@ -37,10 +37,11 @@
 
     <style name="AppSpinner" parent="Widget.AppCompat.Spinner">
         <item name="android:background">@drawable/spinner_background</item>
-        <item name="android:paddingStart">8dp</item>
-        <item name="android:paddingEnd">8dp</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:popupBackground">@android:color/white</item>
     </style>
 
 
@@ -56,16 +57,24 @@
     </style>
 
     <style name="AppTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">24dp</item>
+        <item name="boxCornerRadiusTopEnd">24dp</item>
+        <item name="boxCornerRadiusBottomStart">24dp</item>
+        <item name="boxCornerRadiusBottomEnd">24dp</item>
         <item name="boxStrokeColor">@color/primary</item>
         <item name="hintTextColor">@color/primary</item>
-        <item name="android:textColorHint">@color/text_hint</item>
-        <item name="boxBackgroundColor">@color/white</item>
     </style>
 
     <style name="AppTextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textColorHint">@color/text_hint</item>
-        <item name="android:background">@color/white</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <style name="AppButton.Disabled" parent="AppButton">
+        <item name="android:backgroundTint">@color/button_disabled</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
 

@@ -13,7 +13,10 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.content.res.ColorStateList;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,18 +25,18 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.hometask.R;
 import com.example.hometask.model.User;
 import com.example.hometask.viewmodel.UserListViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import android.graphics.Rect;
+
 
 public class UserListActivity extends AppCompatActivity {
 
@@ -49,7 +52,7 @@ public class UserListActivity extends AppCompatActivity {
     private List<User> allUsers = new ArrayList<>();
     private List<User> filteredUsers = new ArrayList<>();
     private int currentPage = 1;
-    private static final int USERS_PER_PAGE = 5;
+    private static final int USERS_PER_PAGE = 6;
     private static final String[] SORT_OPTIONS = {"Name", "ID", "Date Added"};
     private int currentSortOption = 1; // Default to ID sorting
 
@@ -117,7 +120,23 @@ public class UserListActivity extends AppCompatActivity {
         adapter = new UserAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(8)); // 8dp additional space
     }
+
+    public static class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {
+        private final int verticalSpaceHeight;
+
+        public VerticalSpaceItemDecoration(int verticalSpaceHeight) {
+            this.verticalSpaceHeight = verticalSpaceHeight;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, @NonNull View view, @NonNull RecyclerView parent,
+                                   @NonNull RecyclerView.State state) {
+            outRect.bottom = verticalSpaceHeight;
+        }
+    }
+
 
     private void setupListeners() {
         backButton.setOnClickListener(v -> finish());
@@ -220,10 +239,19 @@ public class UserListActivity extends AppCompatActivity {
             pageInfoTextView.setText(R.string.no_users_found);
             prevButton.setEnabled(false);
             nextButton.setEnabled(false);
+            prevButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.button_disabled)));
+            nextButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.button_disabled)));
         } else {
             pageInfoTextView.setText(getString(R.string.page_info, currentPage, totalPages));
-            prevButton.setEnabled(currentPage > 1);
-            nextButton.setEnabled(currentPage < totalPages);
+
+            boolean isPrevEnabled = currentPage > 1;
+            boolean isNextEnabled = currentPage < totalPages;
+
+            prevButton.setEnabled(isPrevEnabled);
+            nextButton.setEnabled(isNextEnabled);
+
+            prevButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, isPrevEnabled ? R.color.primary : R.color.button_disabled)));
+            nextButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, isNextEnabled ? R.color.primary : R.color.button_disabled)));
         }
     }
 

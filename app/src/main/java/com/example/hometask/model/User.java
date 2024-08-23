@@ -11,7 +11,10 @@ import com.example.hometask.database.Converters;
 import java.io.Serializable;
 import java.util.Objects;
 
-
+/**
+ * User entity represents a user in the application.
+ * It's used both as a Room database entity and as a model for API responses.
+ */
 @Entity(tableName = "users")
 public class User implements Serializable {
     @PrimaryKey(autoGenerate = true)
@@ -33,7 +36,14 @@ public class User implements Serializable {
     @TypeConverters(Converters.class)
     private Date createdAt;
 
-    // Constructor
+    /**
+     * Constructor for creating a new User.
+     *
+     * @param email     The user's email address.
+     * @param firstName The user's first name.
+     * @param lastName  The user's last name.
+     * @param avatar    The URL or path to the user's avatar image.
+     */
     public User(String email, String firstName, String lastName, String avatar) {
         this.email = email;
         this.firstName = firstName;
@@ -41,7 +51,6 @@ public class User implements Serializable {
         this.avatar = avatar;
         this.createdAt = new Date(); // Set current date when user is created
     }
-
 
     // Getters and setters
     public int getId() { return id; }
@@ -62,6 +71,13 @@ public class User implements Serializable {
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
+    /**
+     * Checks if this User is equal to another object.
+     * Users are considered equal if they have the same id.
+     *
+     * @param o The object to compare with.
+     * @return true if the objects are equal, false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,6 +86,12 @@ public class User implements Serializable {
         return id == user.id;
     }
 
+    /**
+     * Generates a hash code for this User.
+     * The hash code is based on the user's id.
+     *
+     * @return The hash code for this User.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id);

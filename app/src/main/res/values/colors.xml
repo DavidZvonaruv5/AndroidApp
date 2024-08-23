@@ -22,5 +22,5 @@
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
     <color name="danger_button_background">#C62828</color>
-
+    <color name="button_disabled">#A9A9A9</color>
 </resources>
