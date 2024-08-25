@@ -1,191 +1,209 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_cream"
-    android:fillViewport="true">
+    android:background="@color/background_cream">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.example.hometask.ui.DataFlowAnimationView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:context=".ui.MainActivity">
+        android:layout_height="match_parent"
+        android:id="@+id/dataFlowAnimation" />
 
-        <ImageView
-            android:id="@+id/logoImageView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:src="@drawable/logo5"
-            android:scaleType="fitCenter"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.3"
-            android:contentDescription="@string/app_logo"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/quoteTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-70dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:textStyle="italic"
-            android:textSize="@dimen/quote_text_size"
-            android:textColor="@color/primary_dark"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/logoImageView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <Space
-            android:id="@+id/spaceBetweenQuoteAndStats"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            app:layout_constraintTop_toBottomOf="@id/quoteTextView"/>
-
-        <TextView
-            android:id="@+id/totalUsersLabel"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/total_users_multiline"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_text"
-            android:gravity="center"
-            app:layout_constraintBottom_toTopOf="@id/totalUsersCard"
-            app:layout_constraintStart_toStartOf="@id/totalUsersCard"
-            app:layout_constraintEnd_toEndOf="@id/totalUsersCard"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="32dp"/>
+            tools:context=".ui.MainActivity">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/totalUsersCard"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            app:cardCornerRadius="60dp"
-            app:cardElevation="12dp"
-            app:layout_constraintTop_toBottomOf="@id/spaceBetweenQuoteAndStats"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/recentlyAddedCard"
-            android:layout_marginTop="64dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp">
+            <ImageView
+                android:id="@+id/logoImageView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/logo5"
+                android:scaleType="fitCenter"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.3"
+                android:contentDescription="@string/app_logo"/>
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/totalUsersTextView"
+            <FrameLayout
+                android:id="@+id/quoteContainer"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="-70dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintTop_toBottomOf="@id/logoImageView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/quoteTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textStyle="italic"
+                    android:textSize="@dimen/quote_text_size"
+                    android:textColor="@color/primary_dark"
+                    android:gravity="center"/>
+
+            </FrameLayout>
+
+            <Space
+                android:id="@+id/spaceBetweenQuoteAndStats"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/_0"
-                android:textSize="48sp"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@id/quoteContainer"/>
+
+            <TextView
+                android:id="@+id/totalUsersLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total_users_multiline"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary_text"
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="12sp"
-                android:autoSizeMaxTextSize="48sp"
-                android:autoSizeStepGranularity="2sp"/>
-
-        </androidx.cardview.widget.CardView>
-
-        <TextView
-            android:id="@+id/recentlyAddedLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/recently_added_multiline"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_text"
-            android:gravity="center"
-            app:layout_constraintBottom_toTopOf="@id/recentlyAddedCard"
-            app:layout_constraintStart_toStartOf="@id/recentlyAddedCard"
-            app:layout_constraintEnd_toEndOf="@id/recentlyAddedCard"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="32dp"/>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/recentlyAddedCard"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            app:cardCornerRadius="60dp"
-            app:cardElevation="12dp"
-            app:layout_constraintTop_toBottomOf="@id/spaceBetweenQuoteAndStats"
-            app:layout_constraintStart_toEndOf="@id/totalUsersCard"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="64dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/recentlyAddedTextView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="@string/_0"
-                android:textSize="48sp"
+                app:layout_constraintBottom_toTopOf="@id/totalUsersCard"
+                app:layout_constraintStart_toStartOf="@id/totalUsersCard"
+                app:layout_constraintEnd_toEndOf="@id/totalUsersCard"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="32dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/totalUsersCard"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                app:cardCornerRadius="60dp"
+                app:cardElevation="12dp"
+                app:layout_constraintTop_toBottomOf="@id/spaceBetweenQuoteAndStats"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/recentlyAddedCard"
+                android:layout_marginTop="64dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/totalUsersTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/_0"
+                    android:textSize="48sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_text"
+                    app:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="12sp"
+                    app:autoSizeMaxTextSize="48sp"
+                    app:autoSizeStepGranularity="2sp"/>
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/recentlyAddedLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/recently_added_multiline"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary_text"
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="12sp"
-                android:autoSizeMaxTextSize="48sp"
-                android:autoSizeStepGranularity="2sp"/>
+                android:gravity="center"
+                app:layout_constraintBottom_toTopOf="@id/recentlyAddedCard"
+                app:layout_constraintStart_toStartOf="@id/recentlyAddedCard"
+                app:layout_constraintEnd_toEndOf="@id/recentlyAddedCard"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="32dp"/>
 
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/recentlyAddedCard"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                app:cardCornerRadius="60dp"
+                app:cardElevation="12dp"
+                app:layout_constraintTop_toBottomOf="@id/spaceBetweenQuoteAndStats"
+                app:layout_constraintStart_toEndOf="@id/totalUsersCard"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="64dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp">
 
-        <Button
-            android:id="@+id/displayUsersButton"
-            style="@style/AppButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/display_users"
-            app:layout_constraintTop_toBottomOf="@id/totalUsersCard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="@dimen/max_button_width"
-            android:layout_marginTop="64dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/recentlyAddedTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/_0"
+                    android:textSize="48sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_text"
+                    app:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="12sp"
+                    app:autoSizeMaxTextSize="48sp"
+                    app:autoSizeStepGranularity="2sp"/>
 
-        <Button
-            android:id="@+id/addUserButton"
-            style="@style/AppButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/add_user_2"
-            app:layout_constraintTop_toBottomOf="@id/displayUsersButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="@dimen/max_button_width"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"/>
+            </androidx.cardview.widget.CardView>
 
-        <Button
-            android:id="@+id/loadUsersButton"
-            style="@style/AppButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/load_users"
-            app:layout_constraintTop_toBottomOf="@id/addUserButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="@dimen/max_button_width"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="24dp"/>
+            <Button
+                android:id="@+id/displayUsersButton"
+                style="@style/AppButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/display_users"
+                app:layout_constraintTop_toBottomOf="@id/totalUsersCard"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_max="@dimen/max_button_width"
+                android:layout_marginTop="64dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"/>
 
-        <ProgressBar
-            android:id="@+id/loadingProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <Button
+                android:id="@+id/addUserButton"
+                style="@style/AppButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/add_user_2"
+                app:layout_constraintTop_toBottomOf="@id/displayUsersButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_max="@dimen/max_button_width"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            <Button
+                android:id="@+id/loadUsersButton"
+                style="@style/AppButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/load_users"
+                app:layout_constraintTop_toBottomOf="@id/addUserButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_max="@dimen/max_button_width"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="24dp"/>
+
+            <ProgressBar
+                android:id="@+id/loadingProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</FrameLayout>
