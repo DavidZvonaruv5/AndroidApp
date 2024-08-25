@@ -50,7 +50,7 @@ public class UserRepository {
      * @param callback Callback to handle the result.
      */
     public void syncUsersFromApi(final RepositoryCallback<List<User>> callback) {
-        getAllUsers(new RepositoryCallback<List<User>>() {
+        getAllUsers(new RepositoryCallback<>() {
             @Override
             public void onSuccess(List<User> apiUsers) {
                 mergeUsersWithDatabase(apiUsers, callback);
@@ -70,12 +70,12 @@ public class UserRepository {
     public void getAllUsers(final RepositoryCallback<List<User>> callback) {
         final List<User> allUsers = new ArrayList<>();
 
-        fetchUsersFromPage(1, new RepositoryCallback<List<User>>() {
+        fetchUsersFromPage(1, new RepositoryCallback<>() {
             @Override
             public void onSuccess(List<User> users) {
                 allUsers.addAll(users);
 
-                fetchUsersFromPage(2, new RepositoryCallback<List<User>>() {
+                fetchUsersFromPage(2, new RepositoryCallback<>() {
                     @Override
                     public void onSuccess(List<User> users) {
                         allUsers.addAll(users);
@@ -117,11 +117,11 @@ public class UserRepository {
      * @param callback Callback to handle the result.
      */
     private void fetchUsersFromPage(int page, final RepositoryCallback<List<User>> callback) {
-        apiService.getUsers(page).enqueue(new Callback<ApiResponse<List<User>>>() {
+        apiService.getUsers(page).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<List<User>>> call, @NonNull Response<ApiResponse<List<User>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<User> users = response.body().getData();
+                    List<User> users = response.body().data();
                     callback.onSuccess(users);
                 } else {
                     callback.onError(new Exception("API call unsuccessful for page " + page));

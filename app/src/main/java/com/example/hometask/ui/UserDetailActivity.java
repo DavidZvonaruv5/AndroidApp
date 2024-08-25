@@ -50,6 +50,9 @@ public class UserDetailActivity extends AppCompatActivity {
             }
     );
 
+    /**
+     * Executes on the start of the activity
+     * */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

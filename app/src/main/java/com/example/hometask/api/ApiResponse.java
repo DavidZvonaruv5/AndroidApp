@@ -7,17 +7,12 @@ import com.google.gson.annotations.SerializedName;
  * It provides a structured way to handle API responses, allowing for consistent
  * processing of different data types.
  *
- * @param <T> The type of data contained in the response.
+ * @param <T>  The type of data contained in the response.
+ * @param data The actual data returned by the API.
+ *             The @SerializedName annotation is used by Gson for JSON deserialization,
+ *             mapping the JSON field "data" to this variable.
  */
-public class ApiResponse<T> {
-
-    /**
-     * The actual data returned by the API.
-     * The @SerializedName annotation is used by Gson for JSON deserialization,
-     * mapping the JSON field "data" to this variable.
-     */
-    @SerializedName("data")
-    private final T data;
+public record ApiResponse<T>(@SerializedName("data") T data) {
 
     /**
      * Constructor for creating an ApiResponse object manually.
@@ -25,8 +20,7 @@ public class ApiResponse<T> {
      *
      * @param data The data to be wrapped in the ApiResponse.
      */
-    public ApiResponse(T data) {
-        this.data = data;
+    public ApiResponse {
     }
 
     /**
@@ -34,7 +28,8 @@ public class ApiResponse<T> {
      *
      * @return The data contained in the ApiResponse.
      */
-    public T getData() {
+    @Override
+    public T data() {
         return data;
     }
 }

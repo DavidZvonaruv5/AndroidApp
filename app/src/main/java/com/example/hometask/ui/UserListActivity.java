@@ -37,7 +37,10 @@ import java.util.Iterator;
 import java.util.List;
 import android.graphics.Rect;
 
-
+/**
+ * UserListActivity displays a list of users with search, sort, and pagination functionality.
+ * It allows viewing, editing, and deleting users from the list.
+ */
 public class UserListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -56,6 +59,9 @@ public class UserListActivity extends AppCompatActivity {
     private static final String[] SORT_OPTIONS = {"Name", "ID", "Date Added"};
     private int currentSortOption = 1; // Default to ID sorting
 
+    /**
+     * ActivityResultLauncher for handling the result of user detail operations.
+     */
     private final ActivityResultLauncher<Intent> userDetailLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -80,18 +86,16 @@ public class UserListActivity extends AppCompatActivity {
             }
     );
 
+    /**
+     * Executes on the start of the activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
 
-        // Set light status bar
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(true);
-
-        viewModel = new ViewModelProvider(this).get(UserListViewModel.class);
-
+        setupStatusBar();
+        initViewModel();
         initViews();
         setupRecyclerView();
         setupListeners();
@@ -100,6 +104,25 @@ public class UserListActivity extends AppCompatActivity {
         viewModel.loadUsers();
     }
 
+    /**
+     * Sets up the status bar to use light icons on a light background.
+     */
+    private void setupStatusBar() {
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(true);
+    }
+
+    /**
+     * Initializes the ViewModel for this activity.
+     */
+    private void initViewModel() {
+        viewModel = new ViewModelProvider(this).get(UserListViewModel.class);
+    }
+
+    /**
+     * Initializes views by finding them in the layout.
+     */
     private void initViews() {
         recyclerView = findViewById(R.id.recyclerView);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
@@ -110,12 +133,22 @@ public class UserListActivity extends AppCompatActivity {
         searchEditText = findViewById(R.id.searchEditText);
         sortSpinner = findViewById(R.id.sortSpinner);
 
+        setupSortSpinner();
+    }
+
+    /**
+     * Sets up the sort spinner with options.
+     */
+    private void setupSortSpinner() {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, SORT_OPTIONS);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortSpinner.setAdapter(spinnerAdapter);
         sortSpinner.setSelection(currentSortOption);
     }
 
+    /**
+     * Sets up the RecyclerView with its adapter and item decoration.
+     */
     private void setupRecyclerView() {
         adapter = new UserAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -123,6 +156,9 @@ public class UserListActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(8)); // 8dp additional space
     }
 
+    /**
+     * ItemDecoration class to add vertical space between RecyclerView items.
+     */
     public static class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {
         private final int verticalSpaceHeight;
 
@@ -137,7 +173,9 @@ public class UserListActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * Sets up click listeners for buttons and other interactive elements.
+     */
     private void setupListeners() {
         backButton.setOnClickListener(v -> finish());
 
@@ -155,6 +193,15 @@ public class UserListActivity extends AppCompatActivity {
             }
         });
 
+        setupSortSpinnerListener();
+        setupSearchListener();
+        setupAdapterClickListener();
+    }
+
+    /**
+     * Sets up the listener for the sort spinner.
+     */
+    private void setupSortSpinnerListener() {
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -164,7 +211,12 @@ public class UserListActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
+    }
 
+    /**
+     * Sets up the listener for the search functionality.
+     */
+    private void setupSearchListener() {
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -177,7 +229,12 @@ public class UserListActivity extends AppCompatActivity {
                 filterUsers(s.toString());
             }
         });
+    }
 
+    /**
+     * Sets up the click listener for the user adapter.
+     */
+    private void setupAdapterClickListener() {
         adapter.setOnUserClickListener(user -> {
             Intent intent = new Intent(UserListActivity.this, UserDetailActivity.class);
             intent.putExtra("USER", user);
@@ -185,6 +242,9 @@ public class UserListActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets up observers for the ViewModel's LiveData.
+     */
     private void observeViewModel() {
         viewModel.getUsers().observe(this, users -> {
             allUsers = new ArrayList<>(users);
@@ -203,6 +263,11 @@ public class UserListActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Filters users based on the search query.
+     *
+     * @param query The search query string.
+     */
     private void filterUsers(String query) {
         filteredUsers.clear();
         String[] queryWords = query.toLowerCase().split("\\s+");
@@ -224,6 +289,9 @@ public class UserListActivity extends AppCompatActivity {
         updateUserList();
     }
 
+    /**
+     * Updates the user list displayed in the RecyclerView.
+     */
     private void updateUserList() {
         int start = (currentPage - 1) * USERS_PER_PAGE;
         int end = Math.min(start + USERS_PER_PAGE, filteredUsers.size());
@@ -233,6 +301,9 @@ public class UserListActivity extends AppCompatActivity {
         updatePaginationInfo();
     }
 
+    /**
+     * Updates the pagination information and button states.
+     */
     private void updatePaginationInfo() {
         int totalPages = getTotalPages();
         if (filteredUsers.isEmpty()) {
@@ -255,14 +326,29 @@ public class UserListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Calculates the total number of pages based on the number of filtered users.
+     *
+     * @return The total number of pages.
+     */
     private int getTotalPages() {
         return (int) Math.ceil((double) filteredUsers.size() / USERS_PER_PAGE);
     }
 
+    /**
+     * Shows an error message using a Snackbar.
+     *
+     * @param message The error message to display.
+     */
     private void showErrorMessage(String message) {
         Snackbar.make(findViewById(android.R.id.content), getString(R.string.error_message, message), Snackbar.LENGTH_LONG).show();
     }
 
+    /**
+     * Sorts the filtered users based on the selected sort option.
+     *
+     * @param sortOption The sort option to apply.
+     */
     private void sortUsers(int sortOption) {
         currentSortOption = sortOption;
         switch (sortOption) {
@@ -282,6 +368,11 @@ public class UserListActivity extends AppCompatActivity {
         updateUserList();
     }
 
+    /**
+     * Removes a user from both allUsers and filteredUsers lists.
+     *
+     * @param userId The ID of the user to remove.
+     */
     private void removeUserFromList(int userId) {
         Iterator<User> iteratorAll = allUsers.iterator();
         while (iteratorAll.hasNext()) {
@@ -304,6 +395,11 @@ public class UserListActivity extends AppCompatActivity {
         updateUserList();
     }
 
+    /**
+     * Updates a user in both allUsers and filteredUsers lists.
+     *
+     * @param updatedUser The updated User object.
+     */
     private void updateUserInList(User updatedUser) {
         for (int i = 0; i < allUsers.size(); i++) {
             if (allUsers.get(i).getId() == updatedUser.getId()) {

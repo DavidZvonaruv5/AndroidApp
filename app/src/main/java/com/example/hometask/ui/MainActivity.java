@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -37,13 +36,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView recentlyAddedTextView;
     private TextView quoteTextView;
     private MainViewModel viewModel;
-    private TextView titleTextView;
     private final Handler quoteHandler = new Handler();
     private int currentQuoteIndex = 0;
 
-    /**
-     * Array of inspirational quotes to be displayed in rotation.
-     */
+
     private final String[] quotes = {
             "The secret of getting ahead is getting started.",
             "Don't watch the clock; do what it does. Keep going.",
@@ -75,14 +71,15 @@ public class MainActivity extends AppCompatActivity {
             }
     );
 
+    /**
+     * Executes on the start of the activity
+     * */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         setupStatusBar();
-        titleTextView = findViewById(R.id.titleTextView);
-        animateTitle();
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         initViews();
@@ -119,18 +116,6 @@ public class MainActivity extends AppCompatActivity {
         totalUsersTextView = findViewById(R.id.totalUsersTextView);
         recentlyAddedTextView = findViewById(R.id.recentlyAddedTextView);
         quoteTextView = findViewById(R.id.quoteTextView);
-    }
-
-    /**
-     * Animates the title with a combination of pulse and float animations.
-     */
-    private void animateTitle() {
-        AnimationSet animationSet = new AnimationSet(true);
-        Animation pulseAnimation = AnimationUtils.loadAnimation(this, R.anim.pulse_animation);
-        Animation floatAnimation = AnimationUtils.loadAnimation(this, R.anim.float_animation);
-        animationSet.addAnimation(pulseAnimation);
-        animationSet.addAnimation(floatAnimation);
-        titleTextView.startAnimation(animationSet);
     }
 
     /**
@@ -231,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
      * @param total The total number of users.
      */
     private void updateTotalUsers(int total) {
-        totalUsersTextView.setText(getString(R.string.total_users, total));
+        totalUsersTextView.setText(String.valueOf(total));
         Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
         totalUsersTextView.startAnimation(fadeIn);
     }
@@ -242,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
      * @param count The number of recently added users.
      */
     private void updateRecentlyAdded(int count) {
-        recentlyAddedTextView.setText(getString(R.string.recently_added, count));
+        recentlyAddedTextView.setText(String.valueOf(count));
         Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
         recentlyAddedTextView.startAnimation(fadeIn);
     }
@@ -273,6 +258,9 @@ public class MainActivity extends AppCompatActivity {
         quoteHandler.removeCallbacks(quoteRunnable);
     }
 
+    /**
+     * When activity resumes, executes the loading of the dashboard and starts the rotation
+     * */
     @Override
     protected void onResume() {
         super.onResume();
@@ -280,6 +268,9 @@ public class MainActivity extends AppCompatActivity {
         startQuoteRotation();
     }
 
+    /**
+     * When activity pauses (enters another activity but keeps this alive) stops the rotation
+     * */
     @Override
     protected void onPause() {
         super.onPause();

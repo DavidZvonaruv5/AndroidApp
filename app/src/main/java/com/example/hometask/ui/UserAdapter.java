@@ -80,7 +80,7 @@ public class UserAdapter extends ListAdapter<User, UserAdapter.UserViewHolder> {
     /**
      * DiffUtil callback for calculating the difference between two non-null items in a list.
      */
-    private static final DiffUtil.ItemCallback<User> DIFF_CALLBACK = new DiffUtil.ItemCallback<User>() {
+    private static final DiffUtil.ItemCallback<User> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull User oldItem, @NonNull User newItem) {
             return oldItem.getId() == newItem.getId();

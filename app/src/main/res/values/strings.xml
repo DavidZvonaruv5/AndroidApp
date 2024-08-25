@@ -14,8 +14,8 @@
     <string name="image_of_user">Image of user</string>
     <string name="user_avatar">User Avatar</string>
     <string name="add_user">Add User</string>
-    <string name="total_users">Total Users: %1$d</string>
-    <string name="recently_added">Recently Added: %1$d</string>
+    <string name="total_users">TOTAL USERS</string>
+    <string name="recently_added">RECENTLY ADDED</string>
     <string name="user_full_name">%1$s %2$s</string>
     <string name="user_deleted_successfully">User deleted successfully</string>
     <string name="user_updated_successfully">User updated successfully</string>
@@ -30,11 +30,15 @@
     <string name="recently_added_0">Recently Added: 0</string>
     <string name="display_users">Display Users</string>
     <string name="add_user_2">Add User</string>
-    <string name="load_users">Load Users</string>
+    <string name="load_users">Sync Users</string>
     <string name="search_users">Search users</string>
     <string name="previous">Previous</string>
     <string name="page_1_of_1">Page 1 of 1</string>
     <string name="next">Next</string>
     <string name="saving_changes">Saving changes…</string>
     <string name="image_of_the_user">Image of the user</string>
+    <string name="app_logo">App Logo</string>
+    <string name="_0">0</string>
+    <string name="total_users_multiline">TOTAL\nUSERS</string>
+    <string name="recently_added_multiline">RECENTLY\nADDED</string>
 </resources>

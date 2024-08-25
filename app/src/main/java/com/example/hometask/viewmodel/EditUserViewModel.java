@@ -18,6 +18,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * ViewModel for the Edit User functionality.
+ * Handles the business logic for updating an existing user's information.
+ */
 public class EditUserViewModel extends AndroidViewModel {
     private static final String TAG = "EditUserViewModel";
 
@@ -27,31 +31,58 @@ public class EditUserViewModel extends AndroidViewModel {
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>(false);
 
+    /**
+     * Constructor for EditUserViewModel.
+     * @param application The application context.
+     */
     public EditUserViewModel(Application application) {
         super(application);
         userRepository = new UserRepository(application);
     }
 
+    /**
+     * @return LiveData object containing the user being edited.
+     */
     public LiveData<User> getUser() {
         return user;
     }
 
+    /**
+     * @return LiveData object indicating whether a loading operation is in progress.
+     */
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
     }
 
+    /**
+     * @return LiveData object containing any error messages.
+     */
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }
 
+    /**
+     * @return LiveData object indicating whether the update operation was successful.
+     */
     public LiveData<Boolean> getUpdateSuccess() {
         return updateSuccess;
     }
 
+    /**
+     * Sets the user to be edited.
+     * @param user The User object to be edited.
+     */
     public void setUser(User user) {
         this.user.setValue(user);
     }
 
+    /**
+     * Updates the user's information.
+     * @param firstName The updated first name.
+     * @param lastName The updated last name.
+     * @param email The updated email.
+     * @param selectedImageUri The URI of the new avatar image, if changed.
+     */
     public void updateUser(String firstName, String lastName, String email, Uri selectedImageUri) {
         User currentUser = user.getValue();
         if (currentUser == null) {
@@ -71,7 +102,7 @@ public class EditUserViewModel extends AndroidViewModel {
         }
 
         isLoading.setValue(true);
-        userRepository.updateUser(currentUser, new UserRepository.RepositoryCallback<Void>() {
+        userRepository.updateUser(currentUser, new UserRepository.RepositoryCallback<>() {
             @Override
             public void onSuccess(Void result) {
                 isLoading.postValue(false);
@@ -87,6 +118,11 @@ public class EditUserViewModel extends AndroidViewModel {
         });
     }
 
+    /**
+     * Saves the selected image to internal storage.
+     * @param imageUri The URI of the image to save.
+     * @return The path of the saved image, or null if saving failed.
+     */
     private String saveImageToInternalStorage(Uri imageUri) {
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), imageUri);

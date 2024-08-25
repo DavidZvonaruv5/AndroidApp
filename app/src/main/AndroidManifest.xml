@@ -26,7 +26,6 @@
         <activity android:name=".ui.EditUserActivity" />
         <activity android:name=".ui.AddUserActivity" />
 
-
     </application>
 
 </manifest>

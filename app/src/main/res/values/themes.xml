@@ -14,4 +14,6 @@
         <!-- Ensure the background color is applied to the whole window -->
         <item name="android:windowBackground">@color/background_cream</item>
     </style>
+
+
 </resources>
