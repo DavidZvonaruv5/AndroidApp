@@ -79,12 +79,13 @@ public class UserListActivity extends AppCompatActivity {
                                 updateUserInList(updatedUser);
                             }
                         }
-                        sortUsers(currentSortOption);
-                        sortSpinner.setSelection(currentSortOption);
+                        // Refresh the entire list after any change
+                        viewModel.loadUsers();
                     }
                 }
             }
     );
+
 
     /**
      * Executes on the start of the activity
@@ -100,7 +101,6 @@ public class UserListActivity extends AppCompatActivity {
         setupRecyclerView();
         setupListeners();
         observeViewModel();
-
         viewModel.loadUsers();
     }
 
@@ -414,5 +414,8 @@ public class UserListActivity extends AppCompatActivity {
             }
         }
         sortUsers(currentSortOption);
+        updateUserList();  // Refresh the displayed list
+
     }
+
 }

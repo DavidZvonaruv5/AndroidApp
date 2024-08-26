@@ -10,6 +10,16 @@
         <item name="backgroundTint">@color/primary</item>
     </style>
 
+    <style name="EditUserButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">12dp</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="backgroundTint">@color/primaryEdit</item>
+    </style>
+
     <style name="AppTitle">
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
@@ -57,19 +67,19 @@
     </style>
 
     <style name="AppTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusTopStart">24dp</item>
-        <item name="boxCornerRadiusTopEnd">24dp</item>
-        <item name="boxCornerRadiusBottomStart">24dp</item>
-        <item name="boxCornerRadiusBottomEnd">24dp</item>
-        <item name="boxStrokeColor">@color/primary</item>
-        <item name="hintTextColor">@color/primary</item>
+        <item name="android:background">@drawable/search_input_background</item>
+        <item name="boxBackgroundMode">none</item>
+        <item name="hintEnabled">false</item>
+        <item name="endIconMode">clear_text</item>
+        <item name="endIconTint">@color/primary</item>
     </style>
 
-    <style name="AppTextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
+    <style name="AppTextInputEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@null</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
     <style name="AppButton.Disabled" parent="AppButton">

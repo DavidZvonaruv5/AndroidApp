@@ -52,8 +52,8 @@ public class UserListViewModel extends AndroidViewModel {
      * Loads the list of users from the database.
      */
     public void loadUsers() {
-        isLoading.postValue(true);
-        userRepository.getUsersFromDatabase(new UserRepository.RepositoryCallback<>() {
+        isLoading.setValue(true);
+        userRepository.getUsersFromDatabase(new UserRepository.RepositoryCallback<List<User>>() {
             @Override
             public void onSuccess(List<User> result) {
                 users.postValue(result);

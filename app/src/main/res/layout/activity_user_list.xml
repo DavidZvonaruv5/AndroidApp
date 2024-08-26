@@ -51,6 +51,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+
     <Spinner
         android:id="@+id/sortSpinner"
         style="@style/AppSpinner"
@@ -59,7 +60,7 @@
         android:layout_margin="@dimen/medium_margin"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.028"
+        app:layout_constraintHorizontal_bias="0.051"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchInputLayout"
         app:layout_constraintWidth_max="@dimen/max_input_width" />

@@ -47,6 +47,7 @@ public class UserDetailActivity extends AppCompatActivity {
                         viewModel.updateUser(updatedUser);
                     }
                 }
+
             }
     );
 
@@ -110,15 +111,18 @@ public class UserDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * Finishes the activity with a result containing the updated user data.
+     * Starts a new UserListActivity and finishes the current activity.
      */
     private void finishWithResult() {
-        Intent resultIntent = new Intent();
+        Intent intent = new Intent(this, UserListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
         User user = viewModel.getUser().getValue();
         if (user != null) {
-            resultIntent.putExtra("UPDATED_USER", user);
+            intent.putExtra("UPDATED_USER", user);
         }
-        setResult(RESULT_OK, resultIntent);
+
+        startActivity(intent);
         finish();
     }
 

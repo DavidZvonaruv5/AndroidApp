@@ -20,6 +20,7 @@ import java.util.Random;
  */
 public class DataFlowAnimationView extends View {
 
+    private static final int BASE_COLOR = 0xFFF28705;
     private List<Particle> particles;
     private Paint paint;
     private Random random;
@@ -77,9 +78,15 @@ public class DataFlowAnimationView extends View {
         float y = height + random.nextFloat() * height; // Start below the screen
         float speed = 2f + random.nextFloat() * 2f;
         float size = 5f + random.nextFloat() * 10f;
-        // Generate shades of green
-        int color = Color.argb(150 + random.nextInt(105),
-                100 + random.nextInt(55), 200 + random.nextInt(55), 0);
+
+        // Generate shades of orange with lower opacity
+        int shade = random.nextInt(50) - 25; // Range: -25 to 24
+        int r = Math.max(0, Math.min(255, Color.red(BASE_COLOR) + shade));
+        int g = Math.max(0, Math.min(255, Color.green(BASE_COLOR) + shade));
+        int b = Math.max(0, Math.min(255, Color.blue(BASE_COLOR) + shade));
+        int alpha = 50 + random.nextInt(100); // Range: 50 to 149 (lower opacity)
+        int color = Color.argb(alpha, r, g, b);
+
         return new Particle(x, y, speed, size, color);
     }
 

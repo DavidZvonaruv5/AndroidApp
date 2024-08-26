@@ -17,7 +17,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="text_primary">#000000</color>
     <color name="text_hint">#757575</color>
-    <color name="primary">#265C4B</color>
+    <color name="primary">#d93d04</color>
+    <color name="primaryEdit">#4CAF50</color>
     <color name="primary_dark">#1A3F33</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
